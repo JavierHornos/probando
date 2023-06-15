@@ -37,6 +37,7 @@ function NavBar() {
         </div>
 
         <nav className={estilo}>
+            
             <button className="cerrar-menu" onClick={cambiarModo}> <i class="bi bi-x-circle-fill"></i>  </button>
 
         <nav className="categorias">
