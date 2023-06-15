@@ -3,6 +3,7 @@ import "./Registro.css"
 import Swal from "sweetalert2";
 import { db } from "../../services/config";
 import { collection, addDoc } from "firebase/firestore";
+import CryptoJS from 'crypto-js'
 
 
 
@@ -11,8 +12,12 @@ const Registro = () => {
 
     const { register, formState: {errors}, handleSubmit } = useForm(); 
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-  
 
+    const cifrar = (texto) => {
+        let textoCifrado = CryptoJS.AES.encrypt(texto, 'Registro').toString()
+        return textoCifrado
+    }
+  
     const onSubmit = async(data) => {
         await sleep(100);
         if (data.contraseña !== data.confirmarContraseña) {
@@ -22,39 +27,34 @@ const Registro = () => {
                 text: 'Las contraseñas no coinciden',
               })
         } else {
-            //crear un documento en la base de datos
-            console.log(data)
-            //aca hacemos el hash
+            console.log(data)            
             await addDoc(collection(db, "Usuarios"), {
                 nombre: data.nombre,
                 apellido: data.apellido,
                 domicilio: data.domicilio,
                 email: data.email,
-                contraseña: data.contraseña,
+                contraseña: cifrar(data.contraseña),
             }) 
             Swal.fire({
                 icon: 'success',
                 title: 'Usuario creado',
                 html: `<p>Se ha creado el usuario correctamente <p/>`,
                 footer: '<b>Inicie sesion<b/>'
-            }) 
-            
-                 /* return <Navigate to="/"/> */
-           
+            })    
         }
-
         console.log("enviar a home")
         await sleep(4000);
             window.location.href='/'
-        
     }
 
     
 
-
   return (
     <div>
         <h1 className="titulo">Registro</h1>
+        
+
+
         <form onSubmit={handleSubmit(onSubmit)} className="formulario">
 
             <div className="form-group">
